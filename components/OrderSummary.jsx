@@ -7,13 +7,13 @@ import { useRouter } from 'next/navigation';
 
 const OrderSummary = ({ totalPrice, items }) => {
 
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$';
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || 'KSH';
 
     const router = useRouter();
 
     const addressList = useSelector(state => state.address.list);
 
-    const [paymentMethod, setPaymentMethod] = useState('COD');
+    const [paymentMethod, setPaymentMethod] = useState('MPESA');
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [showAddressModal, setShowAddressModal] = useState(false);
     const [couponCodeInput, setCouponCodeInput] = useState('');
@@ -39,8 +39,8 @@ const OrderSummary = ({ totalPrice, items }) => {
                 <label htmlFor="COD" className='cursor-pointer'>COD</label>
             </div>
             <div className='flex gap-2 items-center mt-1'>
-                <input type="radio" id="STRIPE" name='payment' onChange={() => setPaymentMethod('STRIPE')} checked={paymentMethod === 'STRIPE'} className='accent-gray-500' />
-                <label htmlFor="STRIPE" className='cursor-pointer'>Stripe Payment</label>
+                <input type="radio" id="MPESA" name='payment' onChange={() => setPaymentMethod('MPESA')} checked={paymentMethod === 'MPESA'} className='accent-gray-500' />
+                <label htmlFor="MPESA" className='cursor-pointer'>M-Pesa STK Push</label>
             </div>
             <div className='my-4 py-4 border-y border-slate-200 text-slate-400'>
                 <p>Address</p>

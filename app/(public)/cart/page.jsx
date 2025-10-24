@@ -1,104 +1,173 @@
 'use client'
-import Counter from "@/components/Counter";
-import OrderSummary from "@/components/OrderSummary";
-import PageTitle from "@/components/PageTitle";
-import { deleteItemFromCart } from "@/lib/features/cart/cartSlice";
-import { Trash2Icon } from "lucide-react";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+
+import { deleteItemFromCart, removeFromCart } from '@/lib/features/cart/cartSlice'
+import { fetchProducts } from '@/lib/features/product/productSlice'
+import { ShoppingCart, Trash2 } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default function Cart() {
 
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$';
-    
-    const { cartItems } = useSelector(state => state.cart);
-    const products = useSelector(state => state.product.list);
-
     const dispatch = useDispatch();
+    const router = useRouter();
 
-    const [cartArray, setCartArray] = useState([]);
-    const [totalPrice, setTotalPrice] = useState(0);
+    const { list: products } = useSelector(state => state.product)
+    const { cartItems, total } = useSelector(state => state.cart)
 
-    const createCartArray = () => {
-        setTotalPrice(0);
-        const cartArray = [];
-        for (const [key, value] of Object.entries(cartItems)) {
-            const product = products.find(product => product.id === key);
-            if (product) {
-                cartArray.push({
-                    ...product,
-                    quantity: value,
-                });
-                setTotalPrice(prev => prev + product.price * value);
-            }
+    const cartProducts = Object.keys(cartItems).map(productId => {
+        const product = products.find(p => p.id === productId)
+        return {
+            ...product,
+            quantity: cartItems[productId]
         }
-        setCartArray(cartArray);
+    }).filter(item => item !== undefined)
+
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || 'KSH'
+
+    const handleRemoveFromCart = (productId) => {
+        dispatch(removeFromCart({ productId }))
     }
 
-    const handleDeleteItemFromCart = (productId) => {
+    const handleDeleteFromCart = (productId) => {
         dispatch(deleteItemFromCart({ productId }))
     }
 
+    const handleCheckout = () => {
+        router.push('/checkout')
+    }
+
     useEffect(() => {
-        if (products.length > 0) {
-            createCartArray();
+        // Fetch products to have product details for cart items
+        if (products.length === 0) {
+            dispatch(fetchProducts())
         }
-    }, [cartItems, products]);
+    }, [dispatch, products.length])
 
-    return cartArray.length > 0 ? (
-        <div className="min-h-screen mx-6 text-slate-800">
+    const subtotal = cartProducts.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    const shipping = subtotal > 0 ? 100 : 0
+    const totalAmount = subtotal + shipping
 
-            <div className="max-w-7xl mx-auto ">
-                {/* Title */}
-                <PageTitle heading="My Cart" text="items in your cart" linkText="Add more" />
-
-                <div className="flex items-start justify-between gap-5 max-lg:flex-col">
-
-                    <table className="w-full max-w-4xl text-slate-600 table-auto">
-                        <thead>
-                            <tr className="max-sm:text-sm">
-                                <th className="text-left">Product</th>
-                                <th>Quantity</th>
-                                <th>Total Price</th>
-                                <th className="max-md:hidden">Remove</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                cartArray.map((item, index) => (
-                                    <tr key={index} className="space-x-2">
-                                        <td className="flex gap-3 my-4">
-                                            <div className="flex gap-3 items-center justify-center bg-slate-100 size-18 rounded-md">
-                                                <Image src={item.images[0]} className="h-14 w-auto" alt="" width={45} height={45} />
-                                            </div>
-                                            <div>
-                                                <p className="max-sm:text-sm">{item.name}</p>
-                                                <p className="text-xs text-slate-500">{item.category}</p>
-                                                <p>{currency}{item.price}</p>
-                                            </div>
-                                        </td>
-                                        <td className="text-center">
-                                            <Counter productId={item.id} />
-                                        </td>
-                                        <td className="text-center">{currency}{(item.price * item.quantity).toLocaleString()}</td>
-                                        <td className="text-center max-md:hidden">
-                                            <button onClick={() => handleDeleteItemFromCart(item.id)} className=" text-red-500 hover:bg-red-50 p-2.5 rounded-full active:scale-95 transition-all">
-                                                <Trash2Icon size={18} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            }
-                        </tbody>
-                    </table>
-                    <OrderSummary totalPrice={totalPrice} items={cartArray} />
+    if (cartProducts.length === 0) {
+        return (
+            <div className="mx-6 my-12">
+                <div className="max-w-7xl mx-auto">
+                    <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <ShoppingCart size={64} className="text-gray-300 mb-6" />
+                        <p className="text-xl mb-6">Your cart is empty</p>
+                        <Link href="/shop" className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                            Continue Shopping
+                        </Link>
+                    </div>
                 </div>
             </div>
-        </div>
-    ) : (
-        <div className="min-h-[80vh] mx-6 flex items-center justify-center text-slate-400">
-            <h1 className="text-2xl sm:text-4xl font-semibold">Your cart is empty</h1>
+        )
+    }
+
+    return (
+        <div className="mx-6 my-12">
+            <div className="max-w-7xl mx-auto">
+                <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
+
+                <div className="flex flex-col lg:flex-row gap-8">
+                    <div className="lg:w-2/3">
+                        <div className="bg-white rounded-lg shadow">
+                            {cartProducts.map((item) => (
+                                <div key={item.id} className="flex items-center p-6 border-b border-gray-200 last:border-b-0">
+                                    <div className="flex-shrink-0 w-24 h-24 bg-gray-200 rounded-md overflow-hidden">
+                                        {item.images && item.images.length > 0 && (
+                                            <Image
+                                                src={item.images[0]}
+                                                alt={item.name}
+                                                width={96}
+                                                height={96}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        )}
+                                    </div>
+
+                                    <div className="ml-4 flex-1">
+                                        <div className="flex justify-between">
+                                            <div>
+                                                <h3 className="text-lg font-medium text-gray-900">
+                                                    <Link href={`/product/${item.id}`}>{item.name}</Link>
+                                                </h3>
+                                                <p className="mt-1 text-sm text-gray-500">{item.category}</p>
+                                            </div>
+                                            <p className="text-lg font-medium text-gray-900">{currency}{item.price}</p>
+                                        </div>
+
+                                        <div className="mt-4 flex items-center">
+                                            <div className="flex items-center border border-gray-300 rounded-md">
+                                                <button
+                                                    onClick={() => handleRemoveFromCart(item.id)}
+                                                    className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                                                >
+                                                    -
+                                                </button>
+                                                <span className="px-3 py-1">{item.quantity}</span>
+                                                <button
+                                                    onClick={() => dispatch({ type: 'cart/addToCart', payload: { productId: item.id } })}
+                                                    className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+
+                                            <button
+                                                onClick={() => handleDeleteFromCart(item.id)}
+                                                className="ml-4 text-red-600 hover:text-red-800 flex items-center"
+                                            >
+                                                <Trash2 size={16} className="mr-1" />
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="lg:w-1/3">
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <h2 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h2>
+
+                            <div className="space-y-4">
+                                <div className="flex justify-between">
+                                    <p className="text-gray-600">Subtotal</p>
+                                    <p className="text-gray-900">{currency}{subtotal.toFixed(2)}</p>
+                                </div>
+
+                                <div className="flex justify-between">
+                                    <p className="text-gray-600">Shipping</p>
+                                    <p className="text-gray-900">{currency}{shipping.toFixed(2)}</p>
+                                </div>
+
+                                <div className="border-t border-gray-200 pt-4 flex justify-between">
+                                    <p className="text-base font-medium text-gray-900">Total</p>
+                                    <p className="text-base font-medium text-gray-900">{currency}{totalAmount.toFixed(2)}</p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={handleCheckout}
+                                className="mt-6 w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 transition"
+                            >
+                                Proceed to Checkout
+                            </button>
+
+                            <div className="mt-4 text-center">
+                                <Link href="/shop" className="text-indigo-600 hover:text-indigo-500">
+                                    Continue Shopping
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

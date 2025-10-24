@@ -12,12 +12,12 @@ const Footer = () => {
 
     const linkSections = [
         {
-            title: "PRODUCTS",
+            title: "CATEGORIES",
             links: [
-                { text: "Earphones", path: '/', icon: null },
-                { text: "Headphones", path: '/', icon: null },
-                { text: "Smartphones", path: '/', icon: null },
-                { text: "Laptops", path: '/', icon: null },
+                { text: "Kitchen & Dining", path: '/', icon: null },
+                { text: "Appliances", path: '/', icon: null },
+                { text: "Bedroom", path: '/', icon: null },
+                { text: "Living Room", path: '/', icon: null },
             ]
         },
         {
@@ -25,16 +25,15 @@ const Footer = () => {
             links: [
                 { text: "Home", path: '/', icon: null },
                 { text: "Privacy Policy", path: '/', icon: null },
-                { text: "Become Plus Member", path: '/pricing', icon: null },
-                { text: "Create Your Store", path: '/create-store', icon: null },
+               
             ]
         },
         {
             title: "CONTACT",
             links: [
-                { text: "+1-212-456-7890", path: '/', icon: MailIcon },
-                { text: "contact@example.com", path: '/', icon: PhoneIcon },
-                { text: "794 Francisco, 94102", path: '/', icon: MapPinIcon }
+                { text: "+254-700-000-000", path: '/', icon: MailIcon },
+                { text: "info@bijema.co.ke", path: '/', icon: PhoneIcon },
+                { text: "Tom Mboya Street, Nairobi", path: '/', icon: MapPinIcon }
             ]
         }
     ];
@@ -43,7 +42,7 @@ const Footer = () => {
         { icon: FacebookIcon, link: "https://www.facebook.com" },
         { icon: InstagramIcon, link: "https://www.instagram.com" },
         { icon: TwitterIcon, link: "https://twitter.com" },
-        { icon: LinkedinIcon, link: "https://www.linkedin.com" },
+        { icon: TiktokIcon, link: "https://www.tiktok.com" },
     ]
 
     return (
@@ -52,9 +51,9 @@ const Footer = () => {
                 <div className="flex flex-col md:flex-row items-start justify-between gap-10 py-10 border-b border-slate-500/30 text-slate-500">
                     <div>
                         <Link href="/" className="text-4xl font-semibold text-slate-700">
-                            <span className="text-green-600">go</span>cart<span className="text-green-600 text-5xl leading-0">.</span>
+                            <span className="text-green-600">Bij</span>ema<span className="text-green-600 text-5xl leading-0">.</span>
                         </Link>
-                        <p className="max-w-[410px] mt-6 text-sm">Welcome to gocart, your ultimate destination for the latest and smartest gadgets. From smartphones and smartwatches to essential accessories, we bring you the best in innovation — all in one place.</p>
+                        <p className="max-w-[410px] mt-6 text-sm">Your ultimate destination for all household goods in Kenya. From kitchen & dining essentials to appliances, bedroom, living room, bath, cleaning & laundry, and storage & organisation products, we bring you the best quality items — all in one place.</p>
                         <div className="flex items-center gap-3 mt-5">
                             {socialIcons.map((item, i) => (
                                 <Link href={item.link} key={i} className="flex items-center justify-center w-10 h-10 bg-slate-100 hover:scale-105 hover:border border-slate-300 transition rounded-full">
@@ -80,7 +79,7 @@ const Footer = () => {
                     </div>
                 </div>
                 <p className="py-4 text-sm text-slate-500">
-                    Copyright 2025 © gocart All Right Reserved.
+                    Copyright 2025 © Bijema All Right Reserved.
                 </p>
             </div>
         </footer>

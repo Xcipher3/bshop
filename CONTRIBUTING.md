@@ -1,6 +1,6 @@
-# Contributing to GoCart
+# Contributing to Bijema
 
-Thank you for considering contributing to **GoCart**!
+Thank you for considering contributing to **Bijema**!
 We welcome contributions from everyone, whether it's fixing a bug, adding a new feature, or optimizing the codebase.
 
 ---
@@ -35,7 +35,7 @@ We welcome contributions from everyone, whether it's fixing a bug, adding a new 
 
 ## Contribution Guidelines
 
-- **Small, Focused PRs** → Don’t bundle unrelated changes in one PR  
+- **Small, Focused PRs** → Don't bundle unrelated changes in one PR  
 - **Commit Messages** → Use clear and descriptive messages (e.g., `feat: add new feature`, `fix: resolve issue #123`).
 - **Code Style** → Follow the existing code style (e.g., indentation, naming conventions, etc.).
 - **Accessibility** → Ensure that the website is accessible to all users

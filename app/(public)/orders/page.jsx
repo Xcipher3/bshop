@@ -1,46 +1,41 @@
 'use client'
-import PageTitle from "@/components/PageTitle"
-import { useEffect, useState } from "react";
-import OrderItem from "@/components/OrderItem";
-import { orderDummyData } from "@/assets/assets";
+
+import { orderDummyData } from '@/assets/assets'
+import OrderItem from '@/components/OrderItem'
+import { useEffect, useState } from 'react'
 
 export default function Orders() {
 
-    const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState([])
+
+    const fetchOrders = async () => {
+        setOrders(orderDummyData)
+    }
 
     useEffect(() => {
-        setOrders(orderDummyData)
-    }, []);
+        fetchOrders()
+    }, [])
 
     return (
-        <div className="min-h-[70vh] mx-6">
-            {orders.length > 0 ? (
-                (
-                    <div className="my-20 max-w-7xl mx-auto">
-                        <PageTitle heading="My Orders" text={`Showing total ${orders.length} orders`} linkText={'Go to home'} />
+        <div className="mx-6 my-12">
+            <div className="max-w-7xl mx-auto">
+                <h1 className="text-3xl font-bold mb-8">My Orders</h1>
 
-                        <table className="w-full max-w-5xl text-slate-500 table-auto border-separate border-spacing-y-12 border-spacing-x-4">
-                            <thead>
-                                <tr className="max-sm:text-sm text-slate-600 max-md:hidden">
-                                    <th className="text-left">Product</th>
-                                    <th className="text-center">Total Price</th>
-                                    <th className="text-left">Address</th>
-                                    <th className="text-left">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {orders.map((order) => (
-                                    <OrderItem order={order} key={order.id} />
-                                ))}
-                            </tbody>
-                        </table>
+                {orders.length === 0 ? (
+                    <div className="bg-white rounded-lg shadow p-8 text-center">
+                        <p className="text-gray-600 mb-4">You haven't placed any orders yet.</p>
+                        <button className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                            Start Shopping
+                        </button>
                     </div>
-                )
-            ) : (
-                <div className="min-h-[80vh] mx-6 flex items-center justify-center text-slate-400">
-                    <h1 className="text-2xl sm:text-4xl font-semibold">You have no orders</h1>
-                </div>
-            )}
+                ) : (
+                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                        {orders.map((order, index) => (
+                            <OrderItem key={index} order={order} />
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
