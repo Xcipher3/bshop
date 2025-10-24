@@ -1,80 +1,63 @@
-'use client'
-import { Suspense } from "react"
-import ProductCard from "@/components/ProductCard"
-import { MoveLeftIcon } from "lucide-react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { useSelector } from "react-redux"
-import Filters from "@/components/Filters"
-import Sort from "@/components/Sort"
-import { parseQuery } from '@/lib/utils/query'
+import ProductCard from "@/components/ProductCard";
+import Filters from "@/components/Filters";
+import Sort from "@/components/Sort";
+import { parseQuery } from '@/lib/utils/query';
+import { productDummyData } from "@/assets/assets";
 
-function ShopContent() {
-  // get query params ?search=abc
-  const searchParams = useSearchParams()
-  const search = searchParams.get('search')
-  const router = useRouter()
-
-  const products = useSelector(state => state.product.list)
-
+export default function ProductsPage({ searchParams }) {
   // Parse filters from URL
-  const currentFilters = parseQuery(searchParams?.toString() || '')
+  const currentFilters = parseQuery(new URLSearchParams(searchParams || {}).toString());
   
   // Filter products based on URL parameters
-  const filteredProducts = products.filter(product => {
-    // Search filter
-    if (search && !product.name.toLowerCase().includes(search.toLowerCase())) {
-      return false
-    }
-    
+  const filteredProducts = productDummyData.filter(product => {
     // Category filter
     if (currentFilters.category) {
       const categories = Array.isArray(currentFilters.category) 
         ? currentFilters.category 
-        : [currentFilters.category]
+        : [currentFilters.category];
         
       if (!categories.includes(product.category)) {
-        return false
+        return false;
       }
     }
     
     // Price range filters
     if (currentFilters.price_min && product.price < Number(currentFilters.price_min)) {
-      return false
+      return false;
     }
     
     if (currentFilters.price_max && product.price > Number(currentFilters.price_max)) {
-      return false
+      return false;
     }
     
-    return true
-  })
+    return true;
+  });
   
   // Sort products based on URL parameters
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (currentFilters.sort === 'newest') {
       // Since we don't have createdAt in dummy data, we'll sort by id
-      return b.id.localeCompare(a.id)
+      return b.id.localeCompare(a.id);
     } else if (currentFilters.sort === 'price_asc') {
-      return a.price - b.price
+      return a.price - b.price;
     } else if (currentFilters.sort === 'price_desc') {
-      return b.price - a.price
+      return b.price - a.price;
     }
     // Default: featured (no specific sort)
-    return 0
-  })
+    return 0;
+  });
 
   return (
     <div className="min-h-[70vh] mx-6">
       <div className="max-w-7xl mx-auto">
-        <h1 onClick={() => router.push('/shop')} className="text-2xl text-slate-500 my-6 flex items-center gap-2 cursor-pointer"> 
-          {search && <MoveLeftIcon size={20} />}  
-          All <span className="text-slate-700 font-medium">Household Goods</span>
+        <h1 className="text-2xl text-slate-500 my-6">
+          All <span className="text-slate-700 font-medium">Products</span>
         </h1>
         
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Filters Sidebar */}
           <div className="w-full lg:w-64 flex-shrink-0">
-            <Filters products={products} />
+            <Filters products={productDummyData} />
           </div>
           
           {/* Products and Sort */}
@@ -82,7 +65,7 @@ function ShopContent() {
             {/* Sort and Results Count */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
               <p className="text-sm text-gray-500">
-                Showing <span className="font-medium">{sortedProducts.length}</span> of <span className="font-medium">{products.length}</span> products
+                Showing <span className="font-medium">{sortedProducts.length}</span> of <span className="font-medium">{productDummyData.length}</span> products
               </p>
               <div className="mt-2 sm:mt-0">
                 <Sort />
@@ -91,8 +74,10 @@ function ShopContent() {
             
             {/* Products Grid */}
             {sortedProducts.length > 0 ? (
-              <div className="grid grid-cols-2 sm:flex flex-wrap gap-6 xl:gap-12 mx-auto mb-32">
-                {sortedProducts.map((product) => <ProductCard key={product.id} product={product} />)}
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {sortedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
               </div>
             ) : (
               <div className="text-center py-12">
@@ -104,13 +89,5 @@ function ShopContent() {
         </div>
       </div>
     </div>
-  )
-}
-
-export default function Shop() {
-  return (
-    <Suspense fallback={<div>Loading shop...</div>}>
-      <ShopContent />
-    </Suspense>
   );
 }

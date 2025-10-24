@@ -48,7 +48,7 @@ const Navbar = () => {
           <div className="hidden sm:flex items-center gap-4 lg:gap-8 text-slate-600">
             <Link href="/">Home</Link>
             <Link href="/shop">Products</Link>
-            <Link href="/">Contact</Link>
+            <Link href="/contact">Contact</Link>
           
             {/* Desktop Search - visible on xl and larger screens */}
             <form onSubmit={handleSearch} className="hidden xl:flex items-center w-xs text-sm gap-2 bg-slate-100 px-4 py-3 rounded-full">
